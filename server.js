@@ -5,6 +5,11 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
+// Swagger UI
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 // Import contacts routes
 const contactsRoutes = require('./routes/contacts');
 app.use('/contacts', contactsRoutes);
