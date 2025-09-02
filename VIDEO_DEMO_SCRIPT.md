@@ -13,7 +13,7 @@
 
 ### Intro (30 seconds)
 
-"Hi, I'm [your name]. This is my CSE 341 Contacts API project. I'll demonstrate all the requirements:
+"Hi, I'm Kendahl. This is my CSE 341 Contacts API project. I'll demonstrate all the requirements:
 
 - GitHub repo with Node.js project
 - MongoDB connection and data
@@ -54,33 +54,16 @@ Navigate to: https://cse341-al36.onrender.com/docs
 Navigate to: https://cse341-al36.onrender.com/contacts/68b7627b0f7282e4198f94d9
 "GET /contacts/:id returns a single contact by MongoDB ObjectId."
 
-### Demonstrate POST (60 seconds)
+### Demonstrate POST/PUT/DELETE (60 seconds) - OPTIONAL
 
-In PowerShell, run:
+**Note: Week 01 only requires GET endpoints, but you can show these for extra credit**
 
-```powershell
-Invoke-RestMethod -Uri https://cse341-al36.onrender.com/contacts -Method Post -ContentType 'application/json' -Body (@{firstName='Demo'; lastName='User'; email='demo@example.com'; favoriteColor='Purple'; birthday='1995-05-15'} | ConvertTo-Json)
-```
+Option 1 - Use Swagger UI (Easiest):
+Navigate to: https://cse341-al36.onrender.com/docs
+"I can test POST, PUT, DELETE right in the Swagger interface by clicking 'Try it out'"
 
-"POST creates a new contact. Here's the response with the new ID."
-
-### Demonstrate PUT (60 seconds)
-
-Using the ID from POST response:
-
-```powershell
-Invoke-RestMethod -Uri https://cse341-al36.onrender.com/contacts/[NEW_ID] -Method Put -ContentType 'application/json' -Body (@{favoriteColor='Orange'} | ConvertTo-Json)
-```
-
-"PUT updates the contact. The favoriteColor changed from Purple to Orange."
-
-### Demonstrate DELETE (45 seconds)
-
-```powershell
-Invoke-RestMethod -Uri https://cse341-al36.onrender.com/contacts/[NEW_ID] -Method Delete
-```
-
-"DELETE removes the contact. Response shows success: true."
+Option 2 - Skip PowerShell commands:
+"I've implemented POST, PUT, and DELETE endpoints. You can see them in the code and Swagger docs, but Week 01 only requires GET endpoints which I've demonstrated."
 
 ### Show Local Development (45 seconds)
 
@@ -106,27 +89,16 @@ Links to submit:
 - Render: https://cse341-al36.onrender.com/
 - YouTube: [will be this video]"
 
-## Quick Test Commands for Video
+## SIMPLIFIED Commands (if you want to show POST/PUT/DELETE)
 
-Test POST:
+**Easiest way**: Use Swagger UI at https://cse341-al36.onrender.com/docs
 
-```powershell
-$new = Invoke-RestMethod -Uri https://cse341-al36.onrender.com/contacts -Method Post -ContentType 'application/json' -Body (@{firstName='Demo'; lastName='User'; email='demo@example.com'; favoriteColor='Purple'; birthday='1995-05-15'} | ConvertTo-Json)
-$newId = $new._id
-Write-Host "Created ID: $newId"
-```
+- Click on POST /contacts → "Try it out" → Fill in sample data → Execute
+- Copy the returned ID
+- Click on PUT /contacts/{id} → "Try it out" → Paste ID → Execute
+- Click on DELETE /contacts/{id} → "Try it out" → Paste ID → Execute
 
-Test PUT:
-
-```powershell
-Invoke-RestMethod -Uri "https://cse341-al36.onrender.com/contacts/$newId" -Method Put -ContentType 'application/json' -Body (@{favoriteColor='Orange'} | ConvertTo-Json)
-```
-
-Test DELETE:
-
-```powershell
-Invoke-RestMethod -Uri "https://cse341-al36.onrender.com/contacts/$newId" -Method Delete
-```
+**Alternative**: Just mention you implemented them but focus on GET for Week 01.
 
 ## Tips
 
