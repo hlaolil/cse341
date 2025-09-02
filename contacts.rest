@@ -1,4 +1,33 @@
+### Get all contacts
 GET http://localhost:3000/contacts
 
-###
+### Get one contact
 GET http://localhost:3000/contacts/<replace_with_contact_id>
+
+### Example POST (for Week 2)
+POST http://localhost:3000/contacts
+Content-Type: application/json
+
+{
+	"firstName": "New",
+	"lastName": "Person",
+	"email": "new.person@example.com",
+	"favoriteColor": "Yellow",
+	"birthday": "2000-01-01"
+}
+
+### Example PUT (for Week 2)
+PUT http://localhost:3000/contacts/<replace_with_contact_id>
+Content-Type: application/json
+
+{
+	"firstName": "Updated",
+	"lastName": "Person",
+	"email": "updated.person@example.com",
+	"favoriteColor": "Purple",
+	"birthday": "1999-12-31"
+}
+
+### Example DELETE (for Week 2)
+DELETE http://localhost:3000/contacts/<replace_with_contact_id>
+
