@@ -1,33 +1,63 @@
+### CSE 341 Week 02 - Contacts API Testing
+
 ### Get all contacts
+GET https://cse341-al36.onrender.com/contacts
+
+### Get one contact by ID
+GET https://cse341-al36.onrender.com/contacts/68b7627b0f7282e4198f94d9
+
+### Create a new contact (POST) - ALL FIELDS REQUIRED
+POST https://cse341-al36.onrender.com/contacts
+Content-Type: application/json
+
+{
+  "firstName": "Alice",
+  "lastName": "Johnson",
+  "email": "alice.johnson@example.com",
+  "favoriteColor": "Purple",
+  "birthday": "1992-07-20"
+}
+
+### Update a contact (PUT) - Partial updates allowed
+PUT https://cse341-al36.onrender.com/contacts/68b7627b0f7282e4198f94d9
+Content-Type: application/json
+
+{
+  "favoriteColor": "Orange",
+  "email": "updated.email@example.com"
+}
+
+### Delete a contact
+DELETE https://cse341-al36.onrender.com/contacts/68b7627b0f7282e4198f94d9
+
+### Test invalid ID format
+GET https://cse341-al36.onrender.com/contacts/invalid-id
+
+### Test missing required fields (should return 400)
+POST https://cse341-al36.onrender.com/contacts
+Content-Type: application/json
+
+{
+  "firstName": "Incomplete",
+  "lastName": "Contact"
+}
+
+### ======= LOCAL TESTING (if needed) =======
+
+### Get all contacts (local)
 GET http://localhost:3000/contacts
 
-### Get one contact
-GET http://localhost:3000/contacts/<replace_with_contact_id>
+### Get one contact (local)
+GET http://localhost:3000/contacts/68b7627b0f7282e4198f94d9
 
-### Example POST (for Week 2)
+### Create contact (local)
 POST http://localhost:3000/contacts
 Content-Type: application/json
 
 {
-	"firstName": "New",
-	"lastName": "Person",
-	"email": "new.person@example.com",
-	"favoriteColor": "Yellow",
-	"birthday": "2000-01-01"
+  "firstName": "Local",
+  "lastName": "Test",
+  "email": "local@test.com",
+  "favoriteColor": "Yellow",
+  "birthday": "2000-01-01"
 }
-
-### Example PUT (for Week 2)
-PUT http://localhost:3000/contacts/<replace_with_contact_id>
-Content-Type: application/json
-
-{
-	"firstName": "Updated",
-	"lastName": "Person",
-	"email": "updated.person@example.com",
-	"favoriteColor": "Purple",
-	"birthday": "1999-12-31"
-}
-
-### Example DELETE (for Week 2)
-DELETE http://localhost:3000/contacts/<replace_with_contact_id>
-

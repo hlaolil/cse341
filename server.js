@@ -5,10 +5,10 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Swagger UI
+// Swagger UI - Week 02 requirement: /api-docs route
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Import contacts routes
 const contactsRoutes = require('./routes/contacts');
