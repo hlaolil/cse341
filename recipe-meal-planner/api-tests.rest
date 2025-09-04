@@ -1,0 +1,117 @@
+### Recipe & Meal Planning API - Test Requests
+### Use this file with the REST Client extension in VS Code
+
+@baseURL = http://localhost:3001
+# Change to your deployed URL when testing on Render
+# @baseURL = https://your-app-name.onrender.com
+
+### Get all recipes
+GET {{baseURL}}/recipes
+
+### Get single recipe by ID (you'll need to replace with actual ID)
+GET {{baseURL}}/recipes/REPLACE_WITH_ACTUAL_ID
+
+### Create a new recipe
+POST {{baseURL}}/recipes
+Content-Type: application/json
+
+{
+  "name": "Chicken Stir Fry",
+  "ingredients": [
+    "300g chicken breast, sliced",
+    "2 tbsp vegetable oil",
+    "1 bell pepper, sliced",
+    "1 onion, sliced",
+    "2 cloves garlic, minced",
+    "2 tbsp soy sauce",
+    "1 tbsp sesame oil",
+    "1 tsp ginger, minced"
+  ],
+  "instructions": "1. Heat oil in wok. 2. Cook chicken until done. 3. Add vegetables and stir fry. 4. Add sauce and seasonings. 5. Cook for 2-3 minutes and serve.",
+  "prepTime": 15,
+  "cookTime": 10,
+  "servings": 4,
+  "difficulty": "Easy",
+  "cuisine": "Asian",
+  "dietaryTags": ["Dairy-free", "Gluten-free if using tamari"],
+  "nutrition": {
+    "calories": 280,
+    "protein": "25g",
+    "carbs": "8g",
+    "fat": "15g"
+  }
+}
+
+### Update a recipe (replace with actual ID)
+PUT {{baseURL}}/recipes/REPLACE_WITH_ACTUAL_ID
+Content-Type: application/json
+
+{
+  "name": "UPDATED Chicken Stir Fry",
+  "ingredients": [
+    "300g chicken breast, sliced",
+    "2 tbsp vegetable oil",
+    "1 bell pepper, sliced",
+    "1 onion, sliced",
+    "2 cloves garlic, minced",
+    "2 tbsp soy sauce",
+    "1 tbsp sesame oil",
+    "1 tsp ginger, minced",
+    "1 tbsp honey"
+  ],
+  "instructions": "1. Heat oil in wok. 2. Cook chicken until done. 3. Add vegetables and stir fry. 4. Add sauce, seasonings and honey. 5. Cook for 2-3 minutes and serve.",
+  "prepTime": 15,
+  "cookTime": 12,
+  "servings": 4,
+  "difficulty": "Easy",
+  "cuisine": "Asian",
+  "dietaryTags": ["Dairy-free"],
+  "nutrition": {
+    "calories": 320,
+    "protein": "25g",
+    "carbs": "12g",
+    "fat": "15g"
+  }
+}
+
+### Delete a recipe (replace with actual ID)
+DELETE {{baseURL}}/recipes/REPLACE_WITH_ACTUAL_ID
+
+### Get all meal plans
+GET {{baseURL}}/mealplans
+
+### Get meal plans for specific date
+GET {{baseURL}}/mealplans/date/2024-01-15
+
+### Create a new meal plan (replace recipeId with actual ID)
+POST {{baseURL}}/mealplans
+Content-Type: application/json
+
+{
+  "date": "2024-01-15",
+  "recipeId": "REPLACE_WITH_ACTUAL_RECIPE_ID",
+  "mealType": "Dinner",
+  "servings": 4,
+  "notes": "Family dinner - prepare extra for leftovers"
+}
+
+### Update a meal plan (replace both IDs with actual IDs)
+PUT {{baseURL}}/mealplans/REPLACE_WITH_ACTUAL_MEALPLAN_ID
+Content-Type: application/json
+
+{
+  "date": "2024-01-16",
+  "recipeId": "REPLACE_WITH_ACTUAL_RECIPE_ID",
+  "mealType": "Lunch",
+  "servings": 2,
+  "notes": "Quick lunch for two"
+}
+
+### Delete a meal plan (replace with actual ID)
+DELETE {{baseURL}}/mealplans/REPLACE_WITH_ACTUAL_ID
+
+### Test root endpoint
+GET {{baseURL}}/
+
+### Test API documentation
+GET {{baseURL}}/api-docs

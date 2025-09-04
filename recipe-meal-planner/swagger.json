@@ -1,0 +1,880 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Recipe & Meal Planning API",
+    "description": "A comprehensive API for managing recipes and meal planning with full CRUD operations",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Recipe API Support",
+      "email": "support@recipeapi.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://your-app.onrender.com",
+      "description": "Production server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Recipes",
+      "description": "Operations for managing recipes"
+    },
+    {
+      "name": "Meal Plans",
+      "description": "Operations for managing meal plans"
+    }
+  ],
+  "paths": {
+    "/recipes": {
+      "get": {
+        "tags": ["Recipes"],
+        "summary": "Get all recipes",
+        "description": "Retrieve all recipes from the database",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved recipes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Recipe"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Recipes"],
+        "summary": "Create a new recipe",
+        "description": "Add a new recipe to the database",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecipeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recipe created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recipes/{id}": {
+      "get": {
+        "tags": ["Recipes"],
+        "summary": "Get recipe by ID",
+        "description": "Retrieve a specific recipe by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$"
+            },
+            "description": "MongoDB ObjectId of the recipe"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recipe found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recipe"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recipe not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Recipes"],
+        "summary": "Update recipe",
+        "description": "Update an existing recipe",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$"
+            },
+            "description": "MongoDB ObjectId of the recipe"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecipeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Recipe updated successfully"
+          },
+          "400": {
+            "description": "Validation error or invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recipe not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Recipes"],
+        "summary": "Delete recipe",
+        "description": "Delete a recipe from the database",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$"
+            },
+            "description": "MongoDB ObjectId of the recipe"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recipe deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recipe not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mealplans": {
+      "get": {
+        "tags": ["Meal Plans"],
+        "summary": "Get all meal plans",
+        "description": "Retrieve all meal plans from the database",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved meal plans",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MealPlan"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Meal Plans"],
+        "summary": "Create a new meal plan",
+        "description": "Add a new meal plan to the database",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MealPlanInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Meal plan created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mealplans/{id}": {
+      "get": {
+        "tags": ["Meal Plans"],
+        "summary": "Get meal plan by ID",
+        "description": "Retrieve a specific meal plan by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$"
+            },
+            "description": "MongoDB ObjectId of the meal plan"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meal plan found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MealPlan"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Meal plan not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Meal Plans"],
+        "summary": "Update meal plan",
+        "description": "Update an existing meal plan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$"
+            },
+            "description": "MongoDB ObjectId of the meal plan"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MealPlanInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Meal plan updated successfully"
+          },
+          "400": {
+            "description": "Validation error or invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Meal plan not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Meal Plans"],
+        "summary": "Delete meal plan",
+        "description": "Delete a meal plan from the database",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$"
+            },
+            "description": "MongoDB ObjectId of the meal plan"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meal plan deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Meal plan not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mealplans/date/{date}": {
+      "get": {
+        "tags": ["Meal Plans"],
+        "summary": "Get meal plans by date",
+        "description": "Retrieve all meal plans for a specific date",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2024-01-15"
+            },
+            "description": "Date in YYYY-MM-DD format"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meal plans for the specified date",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MealPlan"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Recipe": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "MongoDB ObjectId"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the recipe"
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of ingredients"
+          },
+          "instructions": {
+            "type": "string",
+            "description": "Cooking instructions"
+          },
+          "prepTime": {
+            "type": "integer",
+            "description": "Preparation time in minutes"
+          },
+          "cookTime": {
+            "type": "integer",
+            "description": "Cooking time in minutes"
+          },
+          "servings": {
+            "type": "integer",
+            "description": "Number of servings"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": ["Easy", "Medium", "Hard"],
+            "description": "Difficulty level"
+          },
+          "cuisine": {
+            "type": "string",
+            "description": "Type of cuisine"
+          },
+          "dietaryTags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Dietary tags (e.g., vegetarian, gluten-free)"
+          },
+          "nutrition": {
+            "type": "object",
+            "description": "Nutritional information"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "RecipeInput": {
+        "type": "object",
+        "required": ["name", "ingredients", "instructions", "prepTime", "cookTime", "servings", "difficulty", "cuisine"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the recipe",
+            "example": "Spaghetti Carbonara"
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of ingredients",
+            "example": ["200g spaghetti", "100g pancetta", "2 large eggs", "50g pecorino cheese", "Black pepper", "Salt"]
+          },
+          "instructions": {
+            "type": "string",
+            "description": "Cooking instructions",
+            "example": "1. Cook spaghetti in salted water. 2. Fry pancetta until crispy. 3. Mix eggs and cheese. 4. Combine all ingredients."
+          },
+          "prepTime": {
+            "type": "integer",
+            "description": "Preparation time in minutes",
+            "example": 10
+          },
+          "cookTime": {
+            "type": "integer",
+            "description": "Cooking time in minutes",
+            "example": 15
+          },
+          "servings": {
+            "type": "integer",
+            "description": "Number of servings",
+            "example": 4
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": ["Easy", "Medium", "Hard"],
+            "description": "Difficulty level",
+            "example": "Medium"
+          },
+          "cuisine": {
+            "type": "string",
+            "description": "Type of cuisine",
+            "example": "Italian"
+          },
+          "dietaryTags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Dietary tags",
+            "example": ["Gluten-containing", "Contains eggs"]
+          },
+          "nutrition": {
+            "type": "object",
+            "description": "Nutritional information",
+            "example": {
+              "calories": 520,
+              "protein": "22g",
+              "carbs": "55g",
+              "fat": "23g"
+            }
+          }
+        }
+      },
+      "MealPlan": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "MongoDB ObjectId"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Date for the meal plan"
+          },
+          "recipeId": {
+            "type": "string",
+            "description": "Reference to recipe ObjectId"
+          },
+          "mealType": {
+            "type": "string",
+            "enum": ["Breakfast", "Lunch", "Dinner", "Snack"],
+            "description": "Type of meal"
+          },
+          "servings": {
+            "type": "integer",
+            "description": "Number of servings planned"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "MealPlanInput": {
+        "type": "object",
+        "required": ["date", "recipeId", "mealType", "servings"],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Date for the meal plan",
+            "example": "2024-01-15"
+          },
+          "recipeId": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{24}$",
+            "description": "Reference to recipe ObjectId",
+            "example": "60f7c2b8d4f1c12345678901"
+          },
+          "mealType": {
+            "type": "string",
+            "enum": ["Breakfast", "Lunch", "Dinner", "Snack"],
+            "description": "Type of meal",
+            "example": "Dinner"
+          },
+          "servings": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Number of servings planned",
+            "example": 4
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes",
+            "example": "Prepare extra for leftovers"
+          }
+        }
+      },
+      "CreateResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Recipe created successfully"
+          },
+          "insertedId": {
+            "type": "string",
+            "example": "60f7c2b8d4f1c12345678901"
+          }
+        }
+      },
+      "DeleteResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Recipe deleted successfully"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Recipe not found"
+          },
+          "message": {
+            "type": "string",
+            "example": "No recipe exists with the provided ID"
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Validation failed"
+          },
+          "message": {
+            "type": "string",
+            "example": "Please correct the following errors"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["Recipe name is required", "Valid prep time is required"]
+          }
+        }
+      }
+    }
+  }
+}
