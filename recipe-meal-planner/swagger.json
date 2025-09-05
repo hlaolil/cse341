@@ -2,8 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Recipe & Meal Planning API",
-    "description": "A comprehensive API for managing recipes and meal planning with full CRUD operations",
-    "version": "1.0.0",
+    "description": "A comprehensive API for managing recipes and meal planning with full CRUD operations, OAuth authentication, and data validation",
+    "version": "2.0.0",
     "contact": {
       "name": "Recipe API Support",
       "email": "support@recipeapi.com"
@@ -21,6 +21,10 @@
   ],
   "tags": [
     {
+      "name": "Authentication",
+      "description": "OAuth authentication and user management"
+    },
+    {
       "name": "Recipes",
       "description": "Operations for managing recipes"
     },
@@ -30,6 +34,105 @@
     }
   ],
   "paths": {
+    "/auth/login": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get login information",
+        "description": "Shows OAuth login options and demo authentication status",
+        "responses": {
+          "200": {
+            "description": "Login information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "OAuth authentication available"
+                    },
+                    "googleLogin": {
+                      "type": "string",
+                      "example": "/auth/google"
+                    },
+                    "demo": {
+                      "type": "string",
+                      "example": "Demo mode active - authentication is simulated"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get user profile",
+        "description": "Returns the current authenticated user's profile",
+        "responses": {
+          "200": {
+            "description": "User profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "authenticated": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Logout user",
+        "description": "Logs out the current user",
+        "responses": {
+          "200": {
+            "description": "Successfully logged out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Logged out successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/recipes": {
       "get": {
         "tags": ["Recipes"],
@@ -874,6 +977,28 @@
             "example": ["Recipe name is required", "Valid prep time is required"]
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "OAuth": {
+        "type": "oauth2",
+        "description": "OAuth 2.0 authentication with Google",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "/auth/google",
+            "tokenUrl": "/auth/google/callback",
+            "scopes": {
+              "profile": "Access user profile",
+              "email": "Access user email"
+            }
+          }
+        }
+      },
+      "Demo": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Demo-Auth",
+        "description": "Demo authentication - automatically applied for testing"
       }
     }
   }

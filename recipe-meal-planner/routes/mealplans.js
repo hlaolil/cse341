@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { ObjectId } = require('mongodb');
 const db = require('../db/conn');
+const { requireAuth } = require('../middleware/auth');
 
 // Data validation helper functions
 const validateMealPlan = (mealPlan) => {
@@ -105,7 +106,7 @@ router.get('/date/:date', async (req, res) => {
 });
 
 // POST /mealplans - Create new meal plan
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const mealPlanData = {
       date: req.body.date,
@@ -156,7 +157,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /mealplans/:id - Update existing meal plan
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAuth, async (req, res) => {
   try {
     if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ 
@@ -220,7 +221,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /mealplans/:id - Delete meal plan
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ 

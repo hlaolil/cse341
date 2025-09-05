@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { ObjectId } = require('mongodb');
 const db = require('../db/conn');
+const { requireAuth } = require('../middleware/auth');
 
 // Data validation helper functions
 const validateRecipe = (recipe) => {
@@ -90,7 +91,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /recipes - Create new recipe
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const recipeData = {
       name: req.body.name,
@@ -134,7 +135,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /recipes/:id - Update existing recipe
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAuth, async (req, res) => {
   try {
     if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ 
@@ -191,7 +192,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /recipes/:id - Delete recipe
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ 

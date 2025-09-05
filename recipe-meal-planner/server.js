@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
+const session = require('express-session');
+const { passport, mockAuth } = require('./middleware/auth');
 require('dotenv').config();
 
 const db = require('./db/conn');
@@ -14,8 +16,26 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Session configuration for OAuth
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'demo-secret-key-for-cse341',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // Set to true in production with HTTPS
+}));
+
+// Initialize Passport for OAuth
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Mock authentication for demo purposes (shows OAuth capability)
+app.use(mockAuth);
+
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Authentication routes
+app.use('/auth', require('./routes/auth'));
 
 // Routes
 app.use('/recipes', require('./routes/recipes'));
