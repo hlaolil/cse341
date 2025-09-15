@@ -11,7 +11,7 @@
   },
   "servers": [
     {
-      "url": "https://music-api-cse341.onrender.com",
+      "url": "https://music-api-cse341-u669.onrender.com",
       "description": "Production server"
     },
     {
