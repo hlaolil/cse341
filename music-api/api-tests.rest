@@ -1,0 +1,94 @@
+### GET /artists
+GET {{baseUrl}}/artists
+
+### GET /artists/:id
+GET {{baseUrl}}/artists/{{artistId}}
+
+### POST /artists
+POST {{baseUrl}}/artists
+Content-Type: application/json
+
+{
+  "name": "Led Zeppelin",
+  "genre": "Rock",
+  "country": "United Kingdom",
+  "formed_year": 1968,
+  "members": ["Robert Plant", "Jimmy Page", "John Paul Jones", "John Bonham"],
+  "biography": "English rock band formed in London in 1968.",
+  "website": "https://www.ledzeppelin.com",
+  "social_media": {
+    "twitter": "@ledzeppelin",
+    "instagram": "@ledzeppelin"
+  }
+}
+
+### PUT /artists/:id
+PUT {{baseUrl}}/artists/{{artistId}}
+Content-Type: application/json
+
+{
+  "name": "Led Zeppelin",
+  "genre": "Hard Rock",
+  "country": "United Kingdom",
+  "formed_year": 1968,
+  "members": ["Robert Plant", "Jimmy Page", "John Paul Jones", "John Bonham"],
+  "biography": "English rock band formed in London in 1968. Considered one of the most influential rock bands.",
+  "website": "https://www.ledzeppelin.com",
+  "social_media": {
+    "twitter": "@ledzeppelin",
+    "instagram": "@ledzeppelin"
+  }
+}
+
+### DELETE /artists/:id
+DELETE {{baseUrl}}/artists/{{artistId}}
+
+### GET /albums
+GET {{baseUrl}}/albums
+
+### GET /albums/:id
+GET {{baseUrl}}/albums/{{albumId}}
+
+### GET /albums/artist/:artistId
+GET {{baseUrl}}/albums/artist/{{artistId}}
+
+### POST /albums
+POST {{baseUrl}}/albums
+Content-Type: application/json
+
+{
+  "title": "Led Zeppelin IV",
+  "artist_id": "{{artistId}}",
+  "release_date": "1971-11-08",
+  "genre": "Rock",
+  "track_count": 8,
+  "duration": 42,
+  "record_label": "Atlantic Records",
+  "cover_image_url": "https://example.com/led-zeppelin-iv.jpg"
+}
+
+### PUT /albums/:id
+PUT {{baseUrl}}/albums/{{albumId}}
+Content-Type: application/json
+
+{
+  "title": "Led Zeppelin IV (Remastered)",
+  "artist_id": "{{artistId}}",
+  "release_date": "1971-11-08",
+  "genre": "Rock",
+  "track_count": 8,
+  "duration": 42,
+  "record_label": "Atlantic Records",
+  "cover_image_url": "https://example.com/led-zeppelin-iv-remastered.jpg"
+}
+
+### DELETE /albums/:id
+DELETE {{baseUrl}}/albums/{{albumId}}
+
+### Seed database
+POST {{baseUrl}}/seed
+
+### Variables
+@baseUrl = http://localhost:3000
+@artistId = replace-with-actual-artist-id
+@albumId = replace-with-actual-album-id
