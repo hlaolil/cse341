@@ -2,13 +2,11 @@
 
 ## Music API - Under 5 Minutes for Full Points
 
----
-
 ## 🎬 **MINUTE 1: Introduction & GitHub (0:00-1:00)**
 
 ### **[0:00-0:30] Opening**
 
-- "Hi, I'm [Your Name]. This is my CSE 341 Week 5 Music API project."
+- "Hi, I'm Kendahl. This is my CSE 341 Week 5 Music API project."
 - "I built a REST API with two collections: Artists and Albums, with full CRUD operations."
 
 ### **[0:30-1:00] GitHub Repository**
@@ -83,7 +81,14 @@
 - Try POST with missing required field (remove "name")
 - Click "Execute" - show 400 error with validation details
 
----
+```json
+{
+  "genre": "Rock",
+  "country": "United Kingdom",
+  "formed_year": 1968,
+  "members": ["Robert Plant", "Jimmy Page"]
+}
+```
 
 ## 🎬 **MINUTE 5: Wrap-up & Final Points (4:00-5:00)**
 
@@ -105,18 +110,6 @@
 
 ---
 
-## 🎯 **Rubric Points Covered**
-
-✅ **Two Collections** - Artists & Albums clearly shown  
-✅ **CRUD Operations** - GET and POST demonstrated  
-✅ **Error Handling** - Validation error shown  
-✅ **Swagger Documentation** - Interactive docs at /api-docs  
-✅ **Deployment** - Working on Render  
-✅ **GitHub Repository** - Code structure shown  
-✅ **Professional Presentation** - Clear, organized demo
-
----
-
 ## 🚀 **Quick Reference URLs**
 
 - **GitHub**: `https://github.com/kendychae/cse341`
@@ -126,14 +119,6 @@
 - **Albums**: `https://music-api-cse341-u669.onrender.com/albums`
 
 ---
-
-## 💡 **Recording Tips**
-
-1. **Practice once** to stay under 5 minutes
-2. **Have URLs ready** in browser tabs
-3. **Speak clearly** and at moderate pace
-4. **Don't worry about perfection** - just hit the key points
-5. **End strong** with the requirements checklist
 
 ---
 
