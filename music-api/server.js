@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Session configuration for OAuth
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'music-api-secret-key-cse341',
+  secret: process.env.SESSION_SECRET || 'demo-session-key-replace-in-production',
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false } // Set to true in production with HTTPS
