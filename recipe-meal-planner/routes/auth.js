@@ -108,15 +108,24 @@ router.get('/profile', (req, res) => {
 });
 
 // Google OAuth routes
-router.get('/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
-
-router.get('/google/callback',
-  passport.authenticate('google', { failureRedirect: '/auth/login' }),
-  (req, res) => {
-    res.redirect('/auth/profile');
+router.get('/google', (req, res, next) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    return res.status(503).json({
+      error: 'OAuth not configured',
+      message: 'Google OAuth credentials are not set up. Please contact administrator.',
+      demo: 'This is a demonstration API - OAuth would be functional with proper credentials'
+    });
   }
-);
+  passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+});
+
+router.get('/google/callback', (req, res, next) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    return res.redirect('/auth/login?error=oauth_not_configured');
+  }
+  passport.authenticate('google', { failureRedirect: '/auth/login' })(req, res, next);
+}, (req, res) => {
+  res.redirect('/auth/profile');
+});
 
 module.exports = router;

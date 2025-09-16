@@ -2,20 +2,24 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 // Configure Google OAuth strategy
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "/auth/google/callback"
-}, (accessToken, refreshToken, profile, done) => {
-  // In a real app, you would save user to database
-  const user = {
-    id: profile.id,
-    name: profile.displayName,
-    email: profile.emails[0].value,
-    photo: profile.photos[0].value
-  };
-  return done(null, user);
-}));
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "/auth/google/callback"
+  }, (accessToken, refreshToken, profile, done) => {
+    // In a real app, you would save user to database
+    const user = {
+      id: profile.id,
+      name: profile.displayName,
+      email: profile.emails[0].value,
+      photo: profile.photos[0].value
+    };
+    return done(null, user);
+  }));
+} else {
+  console.warn('⚠️  Google OAuth not configured - missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET');
+}
 
 // Serialize user for session
 passport.serializeUser((user, done) => {

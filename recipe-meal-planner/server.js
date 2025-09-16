@@ -3,8 +3,24 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const session = require('express-session');
-const { passport, mockAuth } = require('./middleware/auth');
 require('dotenv').config();
+
+// Check for required environment variables
+const requiredEnvVars = ['MONGODB_URI'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+  console.error('❌ Missing required environment variables:', missingEnvVars.join(', '));
+  console.error('Please set these variables in your deployment environment.');
+}
+
+// Check for OAuth variables (warn but don't fail)
+if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+  console.warn('⚠️  OAuth credentials not found. OAuth login will not work.');
+  console.warn('Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET for OAuth functionality.');
+}
+
+const { passport, mockAuth } = require('./middleware/auth');
 
 const db = require('./db/conn');
 
