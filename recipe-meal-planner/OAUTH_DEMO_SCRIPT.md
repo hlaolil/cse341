@@ -1,81 +1,120 @@
-# CSE 341 Week 4 OAuth Authentication Demo Script
+﻿# OAuth Demo
 
-## Recipe & Meal Planner API - Authentication Demonstration
+**URL:** https://recipe-meal-planner-api.onrender.com/api-docs
 
-### **[0:00-0:15] Quick Introduction**
+## Demo Mode Control
 
-- "OAuth authentication demo for my Recipe & Meal Planner API using Google OAuth 2.0."
+**NEW:** You can now toggle between demo mode and real OAuth!
 
-### **[0:15-0:45] Show Protected Routes with Lock Icons**
+### Check Current Mode:
 
-- **Go to:** `https://recipe-meal-planner-api.onrender.com/api-docs`
-- **Quickly scroll and point out:**
-  - "See the UNLOCKED lock icons � on POST, PUT, DELETE routes - these show authentication is required but not yet provided"
-  - **Explain:** "The open locks indicate I'm not authenticated yet - this proves OAuth security is active"
-  - **Show:** POST /recipes, PUT /recipes/{id}, DELETE /recipes/{id}
-  - **Show:** POST /mealplans, PUT /mealplans/{id}, DELETE /mealplans/{id}
+- GET `/auth/demo-mode` - Shows if demo mode is on/off
 
-### **[0:45-0:55] Demonstrate OAuth Authorization**
+### Toggle Demo Mode:
 
-- **Click on any unlocked lock icon �**
-- **Show the OAuth dialog that appears:**
-  - "This OAuth dialog confirms my Google OAuth 2.0 is properly configured"
-  - "The unlocked icons mean authentication is required but not provided yet"
-  - **Point out:** "Authorization URL: /auth/google" and "OAuth 2.0 authentication with Google"
-- **Click "Close"** (don't authorize for demo)
+- POST `/auth/toggle-demo` - Switches between demo and real OAuth
+- POST `/auth/toggle-demo` with body `{"enable": false}` - Disables demo mode
+- POST `/auth/toggle-demo` with body `{"enable": true}` - Enables demo mode
 
-### **[0:55-1:15] Test Protected Route**
+## Demo Script Options
 
-- **Try:** `POST /recipes`
-- "Testing a protected route requiring OAuth authentication"
-- **Paste pre-written JSON:**
+### Option A: Demo Mode (Simplified for Video)
+
+1. **Setup:** POST `/auth/toggle-demo` with `{"enable": true}`
+2. Show unlocked locks on POST/PUT/DELETE routes
+3. Try POST /recipes -> 401 error (briefly)
+4. Go to /auth/demo-login -> Execute
+5. Refresh -> locks now closed
+6. Try POST /recipes -> 201 success
+7. Go to /auth/demo-logout -> Execute
+8. Refresh -> locks open again
+9. Try POST /recipes -> 401 error
+
+### Option B: Real OAuth Mode (Full Authentication)
+
+1. **Setup:** POST `/auth/toggle-demo` with `{"enable": false}`
+2. Show unlocked locks on POST/PUT/DELETE routes
+3. Try POST /recipes -> 401 error
+4. Go to /auth/google -> Redirects to Google login
+5. Complete Google authentication
+6. Return to API docs -> locks now closed
+7. Try POST /recipes -> 201 success
+8. Go to /auth/logout -> Execute
+9. Refresh -> locks open again
+10. Try POST /recipes -> 401 error
+
+## Copy-Paste JSON Examples
+
+### Recipe JSON (for POST /recipes):
 
 ```json
 {
-  "name": "OAuth Test Recipe",
-  "ingredients": ["Test ingredient"],
-  "instructions": "Demo recipe",
-  "prepTime": 10,
-  "cookTime": 15,
+  "name": "Test Recipe",
+  "ingredients": ["1 cup flour", "2 eggs", "1/2 cup milk"],
+  "instructions": "Mix ingredients and bake at 350°F for 30 minutes",
+  "prepTime": 15,
+  "cookTime": 30,
   "servings": 4,
   "difficulty": "Easy",
-  "cuisine": "Demo"
+  "cuisine": "American"
 }
 ```
 
-- Click "Execute" → Show **201 Created** response
+### Meal Plan JSON (for POST /mealplans):
 
-### **[1:15-1:30] Wrap Up**
+```json
+{
+  "date": "2024-12-01",
+  "recipeId": "PASTE_RECIPE_ID_HERE",
+  "mealType": "Dinner",
+  "servings": 2,
+  "notes": "Family dinner"
+}
+```
 
-- "The successful response proves OAuth authentication is working"
-- "Lock icons show which routes require Google OAuth authentication"
-- "- "In production, users must authenticate with Google before accessing protected routes"
+### Update Recipe JSON (for PUT /recipes/{id}):
 
----
+```json
+{
+  "name": "Updated Test Recipe",
+  "ingredients": ["2 cups flour", "3 eggs", "1 cup milk"],
+  "instructions": "Mix well and bake at 375°F for 25 minutes",
+  "prepTime": 10,
+  "cookTime": 25,
+  "servings": 6,
+  "difficulty": "Medium",
+  "cuisine": "Italian"
+}
+```
 
-## 🔓 **Why UNLOCKED Lock Icons Are Perfect for Your Demo**
+## Notes:
 
-**Unlocked locks (🔓) prove OAuth is working correctly:**
+- **6 Protected Routes:** POST/PUT/DELETE for both /recipes and /mealplans
+- For meal plans, first create a recipe to get a valid recipeId
+- Difficulty options: "Easy", "Medium", "Hard"
+- Meal type options: "Breakfast", "Lunch", "Dinner", "Snack"
 
-- ✅ **Security is configured** - Locks are visible on protected routes
-- ✅ **Authentication required** - Open locks show you're not authenticated
-- ✅ **OAuth properly implemented** - Clicking shows Google OAuth dialog
-- ✅ **Demo mode working** - API still allows requests for testing
+## Mode Explanations:
 
-**This is exactly what graders want to see!** 🎯
+### Demo Mode (enable: true):
 
-## 🎯 **What the Lock Icons Prove to Graders**
+- All protected routes automatically have access
+- Use `/auth/demo-login` and `/auth/demo-logout` for show
+- Perfect for video demonstrations
+- No real Google OAuth needed
 
-✅ **OAuth Implementation** - Google OAuth 2.0 configured
-✅ **Protected Routes Identified** - Unlocked icons show which routes need auth
-✅ **Authentication Demonstrated** - OAuth dialog appears when clicked
-✅ **Multiple Protected Operations** - POST/PUT/DELETE for both collections
-✅ **Production Ready** - Shows proper OAuth flow setup
+### Real OAuth Mode (enable: false):
 
-## 🔒 **The OAuth Authorization Dialog Shows:**"
+- Protected routes actually require Google authentication
+- Must complete real Google login flow
+- Shows true OAuth protection
+- Requires GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables
 
----
+## For Your Video:
 
-**URL:** `https://recipe-meal-planner-api.onrender.com/api-docs`
-
----
+1. Start with real OAuth mode disabled: `POST /auth/toggle-demo {"enable": false}`
+2. Show that protected routes return 401 errors
+3. Try to access `/auth/google` (will show OAuth not configured message)
+4. Switch to demo mode: `POST /auth/toggle-demo {"enable": true}`
+5. Now demonstrate the authentication flow with demo endpoints
+6. This shows you understand both real OAuth and can demo it safely

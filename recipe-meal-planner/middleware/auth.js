@@ -31,17 +31,50 @@ passport.deserializeUser((user, done) => {
   done(null, user);
 });
 
+// Global demo mode state (can be toggled at runtime)
+let isDemoMode = process.env.DEMO_MODE === 'true' || false;
+
+// Function to toggle demo mode
+const toggleDemoMode = (enable = null) => {
+  if (enable !== null) {
+    isDemoMode = enable;
+  } else {
+    isDemoMode = !isDemoMode;
+  }
+  console.log(`🔄 Demo mode ${isDemoMode ? 'ENABLED' : 'DISABLED'}`);
+  return isDemoMode;
+};
+
+// Get current demo mode status
+const getDemoMode = () => isDemoMode;
+
 // Middleware to check if user is authenticated
 const requireAuth = (req, res, next) => {
+  // If demo mode is enabled, bypass real authentication
+  if (isDemoMode) {
+    // Apply mock user if not already authenticated
+    if (!req.user) {
+      req.user = {
+        id: 'demo-user-12345',
+        name: 'Demo User',
+        email: 'demo@cse341.com',
+        photo: 'https://via.placeholder.com/150'
+      };
+    }
+    return next();
+  }
+  
+  // Real authentication check
   if (req.isAuthenticated()) {
     return next();
   }
   
-  // Actually block access - this is what makes routes protected
+  // Block access - routes are actually protected
   return res.status(401).json({
     error: 'Authentication required',
     message: 'You must be logged in to access this resource',
-    loginUrl: '/auth/google'
+    loginUrl: '/auth/google',
+    demoMode: false
   });
 };
 
@@ -60,5 +93,7 @@ const mockAuth = (req, res, next) => {
 module.exports = {
   passport,
   requireAuth,
-  mockAuth
+  mockAuth,
+  toggleDemoMode,
+  getDemoMode
 };

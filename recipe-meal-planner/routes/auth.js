@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { passport } = require('../middleware/auth');
+const { passport, toggleDemoMode, getDemoMode } = require('../middleware/auth');
 
 /**
  * @swagger
@@ -157,6 +157,72 @@ router.get('/demo-logout', (req, res) => {
       message: 'Demo logout successful - routes are now protected again',
       note: 'This demonstrates the OAuth logout functionality'
     });
+  });
+});
+
+/**
+ * @swagger
+ * /auth/demo-mode:
+ *   get:
+ *     tags: [Authentication]
+ *     summary: Get current demo mode status
+ *     description: Returns whether demo mode is currently enabled or disabled
+ *     responses:
+ *       200:
+ *         description: Demo mode status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 demoMode:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ */
+router.get('/demo-mode', (req, res) => {
+  const demoMode = getDemoMode();
+  res.json({
+    demoMode: demoMode,
+    message: `Demo mode is currently ${demoMode ? 'ENABLED' : 'DISABLED'}`,
+    note: demoMode ? 'All protected routes are accessible without real authentication' : 'Real OAuth authentication is required for protected routes'
+  });
+});
+
+/**
+ * @swagger
+ * /auth/toggle-demo:
+ *   post:
+ *     tags: [Authentication]
+ *     summary: Toggle demo mode on/off
+ *     description: Switch between demo mode and real OAuth authentication
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               enable:
+ *                 type: boolean
+ *                 description: Set to true to enable demo mode, false to disable, or omit to toggle
+ *     responses:
+ *       200:
+ *         description: Demo mode toggled successfully
+ */
+router.post('/toggle-demo', (req, res) => {
+  const { enable } = req.body;
+  const newState = toggleDemoMode(enable);
+  
+  res.json({
+    demoMode: newState,
+    message: `Demo mode ${newState ? 'ENABLED' : 'DISABLED'}`,
+    instruction: newState 
+      ? 'Protected routes are now accessible without authentication' 
+      : 'Protected routes now require real OAuth authentication',
+    nextStep: newState 
+      ? 'Use /auth/demo-login and /auth/demo-logout for demo' 
+      : 'Use /auth/google for real OAuth login'
   });
 });
 
