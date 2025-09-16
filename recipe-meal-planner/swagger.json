@@ -168,6 +168,11 @@
         "tags": ["Recipes"],
         "summary": "Create a new recipe",
         "description": "Add a new recipe to the database",
+        "security": [
+          {
+            "OAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -276,6 +281,11 @@
         "tags": ["Recipes"],
         "summary": "Update recipe",
         "description": "Update an existing recipe",
+        "security": [
+          {
+            "OAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -338,6 +348,11 @@
         "tags": ["Recipes"],
         "summary": "Delete recipe",
         "description": "Delete a recipe from the database",
+        "security": [
+          {
+            "OAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -470,7 +485,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth": []
+          }
+        ]
       }
     },
     "/mealplans/{id}": {
@@ -593,7 +613,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth": []
+          }
+        ]
       },
       "delete": {
         "tags": ["Meal Plans"],
@@ -652,7 +677,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth": []
+          }
+        ]
       }
     },
     "/mealplans/date/{date}": {
