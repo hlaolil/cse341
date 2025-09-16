@@ -42,42 +42,6 @@
 
 ---
 
-## 🎯 **Grading Requirements Met in 90 Seconds**
-
-✅ **OAuth Implementation** - Google OAuth 2.0 mentioned  
-✅ **Protected Routes Identified** - Lock icons clearly show which routes require auth  
-✅ **Authentication Demonstrated** - Successful protected route execution  
-✅ **Multiple Protected Operations** - Show POST/PUT/DELETE for both collections
-
----
-
-## 🚀 **Pre-Demo Setup**
-
-**Have this JSON ready to paste:**
-
-```json
-{
-  "name": "OAuth Test Recipe",
-  "ingredients": ["Test ingredient"],
-  "instructions": "Demo recipe",
-  "prepTime": 10,
-  "cookTime": 15,
-  "servings": 4,
-  "difficulty": "Easy",
-  "cuisine": "Demo"
-}
-```
-
 **URL:** `https://recipe-meal-planner-api.onrender.com/api-docs`
 
 ---
-
-## 💡 **Why This Gets Full Points**
-
-- **Lock icons** = Visual proof of authentication requirements
-- **Successful protected route test** = Authentication is working
-- **Google OAuth mentioned** = Implementation strategy clear
-- **Multiple collections shown** = Comprehensive protection
-- **Under 90 seconds** = Respects grader's time
-
-**🎥 This focused demo maximizes points while minimizing time!**
