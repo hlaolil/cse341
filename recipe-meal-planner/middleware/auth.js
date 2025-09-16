@@ -32,50 +32,70 @@ passport.deserializeUser((user, done) => {
 });
 
 // Global demo mode state (can be toggled at runtime)
-let isDemoMode = process.env.DEMO_MODE === 'true' || false;
+let isDemoMode = false; // Start with demo mode OFF by default
 
 // Function to toggle demo mode
 const toggleDemoMode = (enable = null) => {
-  if (enable !== null) {
-    isDemoMode = enable;
-  } else {
-    isDemoMode = !isDemoMode;
+  try {
+    if (enable !== null) {
+      isDemoMode = enable;
+    } else {
+      isDemoMode = !isDemoMode;
+    }
+    console.log(`🔄 Demo mode ${isDemoMode ? 'ENABLED' : 'DISABLED'}`);
+    return isDemoMode;
+  } catch (error) {
+    console.error('Error toggling demo mode:', error);
+    return isDemoMode;
   }
-  console.log(`🔄 Demo mode ${isDemoMode ? 'ENABLED' : 'DISABLED'}`);
-  return isDemoMode;
 };
 
 // Get current demo mode status
-const getDemoMode = () => isDemoMode;
+const getDemoMode = () => {
+  try {
+    return isDemoMode;
+  } catch (error) {
+    console.error('Error getting demo mode:', error);
+    return false;
+  }
+};
 
 // Middleware to check if user is authenticated
 const requireAuth = (req, res, next) => {
-  // If demo mode is enabled, bypass real authentication
-  if (isDemoMode) {
-    // Apply mock user if not already authenticated
-    if (!req.user) {
-      req.user = {
-        id: 'demo-user-12345',
-        name: 'Demo User',
-        email: 'demo@cse341.com',
-        photo: 'https://via.placeholder.com/150'
-      };
+  try {
+    // If demo mode is enabled, bypass real authentication
+    if (isDemoMode) {
+      // Apply mock user if not already authenticated
+      if (!req.user) {
+        req.user = {
+          id: 'demo-user-12345',
+          name: 'Demo User',
+          email: 'demo@cse341.com',
+          photo: 'https://via.placeholder.com/150'
+        };
+      }
+      return next();
     }
-    return next();
+    
+    // Real authentication check
+    if (req.isAuthenticated && req.isAuthenticated()) {
+      return next();
+    }
+    
+    // Block access - routes are actually protected
+    return res.status(401).json({
+      error: 'Authentication required',
+      message: 'You must be logged in to access this resource',
+      loginUrl: '/auth/google',
+      demoMode: false
+    });
+  } catch (error) {
+    console.error('Error in requireAuth middleware:', error);
+    return res.status(500).json({
+      error: 'Internal server error',
+      message: 'Authentication middleware error'
+    });
   }
-  
-  // Real authentication check
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  
-  // Block access - routes are actually protected
-  return res.status(401).json({
-    error: 'Authentication required',
-    message: 'You must be logged in to access this resource',
-    loginUrl: '/auth/google',
-    demoMode: false
-  });
 };
 
 // Mock authentication for demo (when OAuth not configured)

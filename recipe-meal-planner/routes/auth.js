@@ -181,12 +181,20 @@ router.get('/demo-logout', (req, res) => {
  *                   type: string
  */
 router.get('/demo-mode', (req, res) => {
-  const demoMode = getDemoMode();
-  res.json({
-    demoMode: demoMode,
-    message: `Demo mode is currently ${demoMode ? 'ENABLED' : 'DISABLED'}`,
-    note: demoMode ? 'All protected routes are accessible without real authentication' : 'Real OAuth authentication is required for protected routes'
-  });
+  try {
+    const demoMode = getDemoMode();
+    res.json({
+      demoMode: demoMode,
+      message: `Demo mode is currently ${demoMode ? 'ENABLED' : 'DISABLED'}`,
+      note: demoMode ? 'All protected routes are accessible without real authentication' : 'Real OAuth authentication is required for protected routes'
+    });
+  } catch (error) {
+    console.error('Error getting demo mode:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Failed to get demo mode status'
+    });
+  }
 });
 
 /**
@@ -211,19 +219,27 @@ router.get('/demo-mode', (req, res) => {
  *         description: Demo mode toggled successfully
  */
 router.post('/toggle-demo', (req, res) => {
-  const { enable } = req.body;
-  const newState = toggleDemoMode(enable);
-  
-  res.json({
-    demoMode: newState,
-    message: `Demo mode ${newState ? 'ENABLED' : 'DISABLED'}`,
-    instruction: newState 
-      ? 'Protected routes are now accessible without authentication' 
-      : 'Protected routes now require real OAuth authentication',
-    nextStep: newState 
-      ? 'Use /auth/demo-login and /auth/demo-logout for demo' 
-      : 'Use /auth/google for real OAuth login'
-  });
+  try {
+    const { enable } = req.body || {};
+    const newState = toggleDemoMode(enable);
+    
+    res.json({
+      demoMode: newState,
+      message: `Demo mode ${newState ? 'ENABLED' : 'DISABLED'}`,
+      instruction: newState 
+        ? 'Protected routes are now accessible without authentication' 
+        : 'Protected routes now require real OAuth authentication',
+      nextStep: newState 
+        ? 'Use /auth/demo-login and /auth/demo-logout for demo' 
+        : 'Use /auth/google for real OAuth login'
+    });
+  } catch (error) {
+    console.error('Error toggling demo mode:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Failed to toggle demo mode'
+    });
+  }
 });
 
 // Google OAuth routes
