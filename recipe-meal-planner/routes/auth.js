@@ -107,6 +107,59 @@ router.get('/profile', (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /auth/demo-login:
+ *   get:
+ *     tags: [Authentication]
+ *     summary: Demo login for video demonstration
+ *     description: Temporarily authenticate for video demo purposes
+ *     responses:
+ *       200:
+ *         description: Demo authentication successful
+ */
+router.get('/demo-login', (req, res) => {
+  // Create a fake user session for demo
+  req.login({
+    id: 'demo-user-12345',
+    name: 'Demo User',
+    email: 'demo@cse341.com',
+    photo: 'https://via.placeholder.com/150'
+  }, (err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Demo login failed' });
+    }
+    res.json({
+      message: 'Demo authentication successful!',
+      user: req.user,
+      note: 'This is for video demonstration only - real OAuth would require Google credentials'
+    });
+  });
+});
+
+/**
+ * @swagger
+ * /auth/demo-logout:
+ *   get:
+ *     tags: [Authentication]
+ *     summary: Demo logout for video demonstration
+ *     description: Clear demo authentication
+ *     responses:
+ *       200:
+ *         description: Demo logout successful
+ */
+router.get('/demo-logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Demo logout failed' });
+    }
+    res.json({ 
+      message: 'Demo logout successful - routes are now protected again',
+      note: 'This demonstrates the OAuth logout functionality'
+    });
+  });
+});
+
 // Google OAuth routes
 router.get('/google', (req, res, next) => {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
