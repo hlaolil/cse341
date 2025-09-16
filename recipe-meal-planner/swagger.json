@@ -133,6 +133,93 @@
         }
       }
     },
+    "/auth/demo-mode": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get current demo mode status",
+        "description": "Returns whether demo mode is currently enabled or disabled",
+        "responses": {
+          "200": {
+            "description": "Demo mode status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "demoMode": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Demo mode is currently DISABLED"
+                    },
+                    "note": {
+                      "type": "string",
+                      "example": "Real OAuth authentication is required for protected routes"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/toggle-demo": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Toggle demo mode on/off",
+        "description": "Switch between demo mode and real OAuth authentication",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "enable": {
+                    "type": "boolean",
+                    "description": "Set to true to enable demo mode, false to disable, or omit to toggle",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Demo mode toggled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "demoMode": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Demo mode ENABLED"
+                    },
+                    "instruction": {
+                      "type": "string",
+                      "example": "Protected routes are now accessible without authentication"
+                    },
+                    "nextStep": {
+                      "type": "string",
+                      "example": "Use /auth/demo-login and /auth/demo-logout for demo"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/recipes": {
       "get": {
         "tags": ["Recipes"],
