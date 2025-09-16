@@ -28,8 +28,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Mock authentication for demo purposes (shows OAuth capability)
-app.use(mockAuth);
+// DON'T use mockAuth globally - it bypasses real authentication
+// app.use(mockAuth); // Commented out to enable real OAuth protection
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

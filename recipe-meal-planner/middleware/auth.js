@@ -3,8 +3,8 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 // Configure Google OAuth strategy
 passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID || 'demo-client-id',
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'demo-client-secret',
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: "/auth/google/callback"
 }, (accessToken, refreshToken, profile, done) => {
   // In a real app, you would save user to database
@@ -33,9 +33,12 @@ const requireAuth = (req, res, next) => {
     return next();
   }
   
-  // For demo purposes, allow access but add warning header
-  res.set('X-Auth-Warning', 'Authentication required. In production, this would require login.');
-  next();
+  // Actually block access - this is what makes routes protected
+  return res.status(401).json({
+    error: 'Authentication required',
+    message: 'You must be logged in to access this resource',
+    loginUrl: '/auth/google'
+  });
 };
 
 // Mock authentication for demo (when OAuth not configured)
