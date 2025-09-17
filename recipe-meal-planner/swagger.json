@@ -501,6 +501,11 @@
         "tags": ["Meal Plans"],
         "summary": "Get all meal plans",
         "description": "Retrieve all meal plans from the database",
+        "security": [
+          {
+            "OAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successfully retrieved meal plans",
@@ -511,6 +516,16 @@
                   "items": {
                     "$ref": "#/components/schemas/MealPlan"
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -585,6 +600,11 @@
         "tags": ["Meal Plans"],
         "summary": "Get meal plan by ID",
         "description": "Retrieve a specific meal plan by its ID",
+        "security": [
+          {
+            "OAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -610,6 +630,16 @@
           },
           "400": {
             "description": "Invalid ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
             "content": {
               "application/json": {
                 "schema": {
