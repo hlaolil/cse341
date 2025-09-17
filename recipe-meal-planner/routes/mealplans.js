@@ -33,7 +33,7 @@ const validateMealPlan = (mealPlan) => {
 };
 
 // GET /mealplans - Get all meal plans
-router.get('/', async (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
   try {
     const database = db.getDb();
     const mealPlans = await database.collection('mealPlans').find().toArray();
@@ -48,7 +48,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /mealplans/:id - Get single meal plan by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', requireAuth, async (req, res) => {
   try {
     if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ 
