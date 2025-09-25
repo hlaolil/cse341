@@ -2,8 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Music API",
-    "description": "A comprehensive REST API for managing artists and albums with full CRUD operations, authentication, and data validation",
-    "version": "1.0.0",
+    "description": "A comprehensive REST API for managing artists, albums, songs, and playlists with full CRUD operations, authentication, and data validation",
+    "version": "2.0.0",
     "contact": {
       "name": "Music API Support",
       "email": "support@musicapi.com"
@@ -31,6 +31,14 @@
     {
       "name": "Albums",
       "description": "Operations for managing albums"
+    },
+    {
+      "name": "Songs",
+      "description": "Operations for managing individual songs"
+    },
+    {
+      "name": "Playlists",
+      "description": "Operations for managing music playlists"
     }
   ],
   "paths": {
@@ -41,69 +49,7 @@
         "description": "Shows OAuth login options and demo authentication status",
         "responses": {
           "200": {
-            "description": "Login information",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "OAuth authentication available"
-                    },
-                    "googleLogin": {
-                      "type": "string",
-                      "example": "/auth/google"
-                    },
-                    "demo": {
-                      "type": "string",
-                      "example": "Demo mode active - authentication is simulated"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/auth/profile": {
-      "get": {
-        "tags": ["Authentication"],
-        "summary": "Get user profile",
-        "description": "Returns the current authenticated user's profile",
-        "responses": {
-          "200": {
-            "description": "User profile",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "user": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string"
-                        },
-                        "name": {
-                          "type": "string"
-                        },
-                        "email": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "authenticated": {
-                      "type": "boolean"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Not authenticated"
+            "description": "Login information"
           }
         }
       }
@@ -111,79 +57,56 @@
     "/artists": {
       "get": {
         "tags": ["Artists"],
-        "summary": "Get all artists",
-        "description": "Retrieve all artists from the database",
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved artists",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Artist"
-                  }
-                }
-              }
-            }
+        "summary": "Get all artists with filtering, sorting, and pagination",
+        "parameters": [
+          {
+            "name": "genre",
+            "in": "query",
+            "description": "Filter by genre",
+            "schema": { "type": "string" }
           },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+          {
+            "name": "country",
+            "in": "query", 
+            "description": "Filter by country",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "schema": { "type": "integer", "minimum": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Items per page (max 100)",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100 }
           }
+        ],
+        "responses": {
+          "200": { "description": "Successfully retrieved artists" },
+          "400": { "description": "Invalid query parameters" },
+          "500": { "description": "Internal server error" }
         }
       },
       "post": {
         "tags": ["Artists"],
         "summary": "Create a new artist",
-        "description": "Add a new artist to the database",
+        "security": [{ "OAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ArtistInput"
-              }
+              "schema": { "$ref": "#/components/schemas/ArtistInput" }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "Artist created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationError"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "201": { "description": "Artist created successfully" },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Authentication required" },
+          "409": { "description": "Artist already exists" }
         }
       }
     },
@@ -191,260 +114,111 @@
       "get": {
         "tags": ["Artists"],
         "summary": "Get artist by ID",
-        "description": "Retrieve a specific artist by their ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$"
-            },
-            "description": "MongoDB ObjectId of the artist"
+            "schema": { "type": "string" }
           }
         ],
         "responses": {
-          "200": {
-            "description": "Artist found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Artist"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID format",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Artist not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "200": { "description": "Artist found" },
+          "400": { "description": "Invalid ID format" },
+          "404": { "description": "Artist not found" }
         }
       },
       "put": {
         "tags": ["Artists"],
         "summary": "Update artist",
-        "description": "Update an existing artist",
+        "security": [{ "OAuth": [] }],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$"
-            },
-            "description": "MongoDB ObjectId of the artist"
+            "schema": { "type": "string" }
           }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ArtistInput"
-              }
+              "schema": { "$ref": "#/components/schemas/ArtistInput" }
             }
           }
         },
         "responses": {
-          "204": {
-            "description": "Artist updated successfully"
-          },
-          "400": {
-            "description": "Validation error or invalid ID format",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Artist not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "204": { "description": "Artist updated successfully" },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Authentication required" },
+          "404": { "description": "Artist not found" }
         }
       },
       "delete": {
         "tags": ["Artists"],
         "summary": "Delete artist",
-        "description": "Delete an artist from the database (only if no albums are associated)",
+        "security": [{ "OAuth": [] }],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$"
-            },
-            "description": "MongoDB ObjectId of the artist"
+            "schema": { "type": "string" }
           }
         ],
         "responses": {
-          "200": {
-            "description": "Artist deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID format or artist has associated albums",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Artist not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "200": { "description": "Artist deleted successfully" },
+          "400": { "description": "Cannot delete artist with albums" },
+          "401": { "description": "Authentication required" },
+          "404": { "description": "Artist not found" }
         }
       }
     },
     "/albums": {
       "get": {
         "tags": ["Albums"],
-        "summary": "Get all albums",
-        "description": "Retrieve all albums from the database",
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved albums",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Album"
-                  }
-                }
-              }
-            }
+        "summary": "Get all albums with filtering, sorting, and pagination",
+        "parameters": [
+          {
+            "name": "genre",
+            "in": "query",
+            "description": "Filter by genre",
+            "schema": { "type": "string" }
           },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+          {
+            "name": "artist_id",
+            "in": "query",
+            "description": "Filter by artist ID", 
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "description": "Filter by release year",
+            "schema": { "type": "integer" }
           }
+        ],
+        "responses": {
+          "200": { "description": "Successfully retrieved albums" }
         }
       },
       "post": {
         "tags": ["Albums"],
         "summary": "Create a new album",
-        "description": "Add a new album to the database",
+        "security": [{ "OAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AlbumInput"
-              }
+              "schema": { "$ref": "#/components/schemas/AlbumInput" }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "Album created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationError"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "201": { "description": "Album created successfully" },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Authentication required" }
         }
       }
     },
@@ -452,396 +226,313 @@
       "get": {
         "tags": ["Albums"],
         "summary": "Get album by ID",
-        "description": "Retrieve a specific album by its ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$"
-            },
-            "description": "MongoDB ObjectId of the album"
+            "schema": { "type": "string" }
           }
         ],
         "responses": {
-          "200": {
-            "description": "Album found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Album"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID format",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Album not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "200": { "description": "Album found" },
+          "404": { "description": "Album not found" }
         }
       },
       "put": {
         "tags": ["Albums"],
         "summary": "Update album",
-        "description": "Update an existing album",
+        "security": [{ "OAuth": [] }],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$"
-            },
-            "description": "MongoDB ObjectId of the album"
+            "schema": { "type": "string" }
           }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AlbumInput"
-              }
+              "schema": { "$ref": "#/components/schemas/AlbumInput" }
             }
           }
         },
         "responses": {
-          "204": {
-            "description": "Album updated successfully"
-          },
-          "400": {
-            "description": "Validation error or invalid ID format",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Album not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "204": { "description": "Album updated successfully" },
+          "401": { "description": "Authentication required" }
         }
       },
       "delete": {
         "tags": ["Albums"],
         "summary": "Delete album",
-        "description": "Delete an album from the database",
+        "security": [{ "OAuth": [] }],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$"
-            },
-            "description": "MongoDB ObjectId of the album"
+            "schema": { "type": "string" }
           }
         ],
         "responses": {
-          "200": {
-            "description": "Album deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeleteResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID format",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Album not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "200": { "description": "Album deleted successfully" },
+          "401": { "description": "Authentication required" }
         }
       }
     },
-    "/albums/artist/{artistId}": {
+    "/songs": {
       "get": {
-        "tags": ["Albums"],
-        "summary": "Get albums by artist",
-        "description": "Retrieve all albums for a specific artist",
+        "tags": ["Songs"],
+        "summary": "Get all songs with filtering and pagination",
         "parameters": [
           {
-            "name": "artistId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-fA-F]{24}$"
-            },
-            "description": "MongoDB ObjectId of the artist"
+            "name": "genre",
+            "in": "query",
+            "description": "Filter by genre",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "artist_id",
+            "in": "query",
+            "description": "Filter by artist ID",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "album_id", 
+            "in": "query",
+            "description": "Filter by album ID",
+            "schema": { "type": "string" }
           }
         ],
         "responses": {
-          "200": {
-            "description": "Albums for the specified artist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Album"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid artist ID format",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
+          "200": { "description": "Successfully retrieved songs" }
+        }
+      },
+      "post": {
+        "tags": ["Songs"],
+        "summary": "Create a new song",
+        "security": [{ "OAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SongInput" }
             }
           }
+        },
+        "responses": {
+          "201": { "description": "Song created successfully" },
+          "401": { "description": "Authentication required" }
+        }
+      }
+    },
+    "/songs/{id}": {
+      "get": {
+        "tags": ["Songs"],
+        "summary": "Get song by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Song found" },
+          "404": { "description": "Song not found" }
+        }
+      },
+      "put": {
+        "tags": ["Songs"],
+        "summary": "Update song",
+        "security": [{ "OAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SongInput" }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Song updated successfully" },
+          "401": { "description": "Authentication required" }
+        }
+      },
+      "delete": {
+        "tags": ["Songs"],
+        "summary": "Delete song",
+        "security": [{ "OAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Song deleted successfully" },
+          "401": { "description": "Authentication required" }
+        }
+      }
+    },
+    "/playlists": {
+      "get": {
+        "tags": ["Playlists"],
+        "summary": "Get all playlists with filtering and pagination",
+        "parameters": [
+          {
+            "name": "creator",
+            "in": "query",
+            "description": "Filter by creator name",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "tag",
+            "in": "query",
+            "description": "Filter by tag",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "is_public",
+            "in": "query",
+            "description": "Filter by public status",
+            "schema": { "type": "boolean" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Successfully retrieved playlists" }
+        }
+      },
+      "post": {
+        "tags": ["Playlists"],
+        "summary": "Create a new playlist",
+        "security": [{ "OAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PlaylistInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Playlist created successfully" },
+          "401": { "description": "Authentication required" }
+        }
+      }
+    },
+    "/playlists/{id}": {
+      "get": {
+        "tags": ["Playlists"],
+        "summary": "Get playlist by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Playlist found" },
+          "404": { "description": "Playlist not found" }
+        }
+      },
+      "put": {
+        "tags": ["Playlists"],
+        "summary": "Update playlist",
+        "security": [{ "OAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PlaylistInput" }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Playlist updated successfully" },
+          "401": { "description": "Authentication required" }
+        }
+      },
+      "delete": {
+        "tags": ["Playlists"],
+        "summary": "Delete playlist",
+        "security": [{ "OAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Playlist deleted successfully" },
+          "401": { "description": "Authentication required" }
+        }
+      }
+    },
+    "/playlists/{id}/songs": {
+      "get": {
+        "tags": ["Playlists"],
+        "summary": "Get all songs in a playlist",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Successfully retrieved playlist songs" },
+          "404": { "description": "Playlist not found" }
         }
       }
     }
   },
   "components": {
     "schemas": {
-      "Artist": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "MongoDB ObjectId"
-          },
-          "name": {
-            "type": "string",
-            "description": "Name of the artist"
-          },
-          "genre": {
-            "type": "string",
-            "description": "Primary music genre"
-          },
-          "country": {
-            "type": "string",
-            "description": "Country of origin"
-          },
-          "formed_year": {
-            "type": "integer",
-            "description": "Year the artist/band was formed"
-          },
-          "members": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "List of band members"
-          },
-          "biography": {
-            "type": "string",
-            "description": "Artist biography"
-          },
-          "website": {
-            "type": "string",
-            "description": "Official website URL"
-          },
-          "social_media": {
-            "type": "object",
-            "description": "Social media handles"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Creation timestamp"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Last update timestamp"
-          }
-        }
-      },
       "ArtistInput": {
         "type": "object",
         "required": ["name", "genre", "country", "formed_year", "members"],
         "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name of the artist",
-            "example": "The Beatles"
-          },
-          "genre": {
-            "type": "string",
-            "description": "Primary music genre",
-            "example": "Rock"
-          },
-          "country": {
-            "type": "string",
-            "description": "Country of origin",
-            "example": "United Kingdom"
-          },
-          "formed_year": {
-            "type": "integer",
-            "description": "Year the artist/band was formed",
-            "example": 1960
-          },
+          "name": { "type": "string", "example": "The Beatles" },
+          "genre": { "type": "string", "example": "Rock" },
+          "country": { "type": "string", "example": "United Kingdom" },
+          "formed_year": { "type": "integer", "example": 1960 },
           "members": {
             "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "List of band members",
+            "items": { "type": "string" },
             "example": ["John Lennon", "Paul McCartney", "George Harrison", "Ringo Starr"]
           },
-          "biography": {
-            "type": "string",
-            "description": "Artist biography",
-            "example": "The Beatles were an English rock band formed in Liverpool in 1960."
-          },
-          "website": {
-            "type": "string",
-            "description": "Official website URL",
-            "example": "https://www.thebeatles.com"
-          },
+          "biography": { "type": "string", "example": "English rock band formed in Liverpool." },
+          "website": { "type": "string", "example": "https://www.thebeatles.com" },
           "social_media": {
             "type": "object",
-            "description": "Social media handles",
-            "example": {
-              "twitter": "@thebeatles",
-              "instagram": "@thebeatles"
-            }
-          }
-        }
-      },
-      "Album": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "MongoDB ObjectId"
-          },
-          "title": {
-            "type": "string",
-            "description": "Album title"
-          },
-          "artist_id": {
-            "type": "string",
-            "description": "Reference to artist ObjectId"
-          },
-          "release_date": {
-            "type": "string",
-            "format": "date",
-            "description": "Album release date"
-          },
-          "genre": {
-            "type": "string",
-            "description": "Album genre"
-          },
-          "track_count": {
-            "type": "integer",
-            "description": "Number of tracks on the album"
-          },
-          "duration": {
-            "type": "integer",
-            "description": "Album duration in minutes"
-          },
-          "record_label": {
-            "type": "string",
-            "description": "Record label"
-          },
-          "cover_image_url": {
-            "type": "string",
-            "description": "URL to album cover image"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Creation timestamp"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Last update timestamp"
+            "example": { "twitter": "@thebeatles", "instagram": "@thebeatles" }
           }
         }
       },
@@ -849,105 +540,54 @@
         "type": "object",
         "required": ["title", "artist_id", "release_date", "genre", "track_count", "duration"],
         "properties": {
-          "title": {
-            "type": "string",
-            "description": "Album title",
-            "example": "Abbey Road"
-          },
-          "artist_id": {
-            "type": "string",
-            "pattern": "^[0-9a-fA-F]{24}$",
-            "description": "Reference to artist ObjectId",
-            "example": "60f7c2b8d4f1c12345678901"
-          },
-          "release_date": {
-            "type": "string",
-            "format": "date",
-            "description": "Album release date",
-            "example": "1969-09-26"
-          },
-          "genre": {
-            "type": "string",
-            "description": "Album genre",
-            "example": "Rock"
-          },
-          "track_count": {
-            "type": "integer",
-            "minimum": 1,
-            "description": "Number of tracks on the album",
-            "example": 17
-          },
-          "duration": {
-            "type": "integer",
-            "minimum": 1,
-            "description": "Album duration in minutes",
-            "example": 47
-          },
-          "record_label": {
-            "type": "string",
-            "description": "Record label",
-            "example": "Apple Records"
-          },
-          "cover_image_url": {
-            "type": "string",
-            "description": "URL to album cover image",
-            "example": "https://example.com/abbey-road.jpg"
-          }
+          "title": { "type": "string", "example": "Abbey Road" },
+          "artist_id": { "type": "string", "example": "60f7c2b8d4f1c12345678901" },
+          "release_date": { "type": "string", "format": "date", "example": "1969-09-26" },
+          "genre": { "type": "string", "example": "Rock" },
+          "track_count": { "type": "integer", "example": 17 },
+          "duration": { "type": "integer", "example": 47 },
+          "record_label": { "type": "string", "example": "Apple Records" },
+          "cover_image_url": { "type": "string", "example": "https://example.com/abbey-road.jpg" }
         }
       },
-      "CreateResponse": {
+      "SongInput": {
         "type": "object",
+        "required": ["title", "album_id", "artist_id", "duration", "genre"],
         "properties": {
-          "message": {
-            "type": "string",
-            "example": "Artist created successfully"
-          },
-          "insertedId": {
-            "type": "string",
-            "example": "60f7c2b8d4f1c12345678901"
-          }
-        }
-      },
-      "DeleteResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Artist deleted successfully"
-          }
-        }
-      },
-      "Error": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "string",
-            "example": "Artist not found"
-          },
-          "message": {
-            "type": "string",
-            "example": "No artist exists with the provided ID"
-          }
-        }
-      },
-      "ValidationError": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "string",
-            "example": "Validation failed"
-          },
-          "message": {
-            "type": "string",
-            "example": "Please correct the following errors"
-          },
-          "details": {
+          "title": { "type": "string", "example": "Come Together" },
+          "album_id": { "type": "string", "example": "60f7c2b8d4f1c12345678901" },
+          "artist_id": { "type": "string", "example": "60f7c2b8d4f1c12345678901" },
+          "duration": { "type": "integer", "example": 259 },
+          "track_number": { "type": "integer", "example": 1 },
+          "genre": { "type": "string", "example": "Rock" },
+          "lyrics": { "type": "string", "example": "Here come old flat top..." },
+          "audio_url": { "type": "string", "example": "https://example.com/song.mp3" },
+          "featured_artists": {
             "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "example": ["Artist name is required", "Valid formed year is required"]
+            "items": { "type": "string" },
+            "example": []
           }
+        }
+      },
+      "PlaylistInput": {
+        "type": "object",
+        "required": ["name", "creator_name"],
+        "properties": {
+          "name": { "type": "string", "example": "My Favorite Songs" },
+          "creator_name": { "type": "string", "example": "John Doe" },
+          "description": { "type": "string", "example": "A collection of my favorite tracks" },
+          "songs": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["60f7c2b8d4f1c12345678901", "60f7c2b8d4f1c12345678902"]
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["rock", "favorites", "classic"]
+          },
+          "is_public": { "type": "boolean", "example": true },
+          "cover_image_url": { "type": "string", "example": "https://example.com/playlist.jpg" }
         }
       }
     },

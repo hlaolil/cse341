@@ -40,6 +40,8 @@ app.use('/auth', require('./routes/auth'));
 // Routes
 app.use('/artists', require('./routes/artists'));
 app.use('/albums', require('./routes/albums'));
+app.use('/songs', require('./routes/songs'));
+app.use('/playlists', require('./routes/playlists'));
 
 // Seed endpoint for populating database with sample data
 app.post('/seed', async (req, res) => {
@@ -98,6 +100,8 @@ app.post('/seed', async (req, res) => {
     // Clear existing data and insert sample data
     await database.collection('artists').deleteMany({});
     await database.collection('albums').deleteMany({});
+    await database.collection('songs').deleteMany({});
+    await database.collection('playlists').deleteMany({});
     
     const artistResult = await database.collection('artists').insertMany(sampleArtists);
     const artistIds = Object.values(artistResult.insertedIds);
@@ -154,12 +158,123 @@ app.post('/seed', async (req, res) => {
       }
     ];
     
-    const albumResult = await database.collection('albums').insertMany(sampleAlbums);
+    // Sample songs
+    const sampleSongs = [
+      {
+        title: "Come Together",
+        album_id: albumIds[0].toString(),
+        artist_id: artistIds[0].toString(),
+        duration: 259,
+        track_number: 1,
+        genre: "Rock",
+        lyrics: "Here come old flat top, he come grooving up slowly...",
+        audio_url: "https://example.com/come-together.mp3",
+        featured_artists: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        title: "Something",
+        album_id: albumIds[0].toString(),
+        artist_id: artistIds[0].toString(),
+        duration: 183,
+        track_number: 2,
+        genre: "Rock",
+        lyrics: "Something in the way she moves...",
+        audio_url: "https://example.com/something.mp3",
+        featured_artists: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        title: "Bohemian Rhapsody",
+        album_id: albumIds[1].toString(),
+        artist_id: artistIds[1].toString(),
+        duration: 355,
+        track_number: 1,
+        genre: "Rock",
+        lyrics: "Is this the real life? Is this just fantasy?...",
+        audio_url: "https://example.com/bohemian-rhapsody.mp3",
+        featured_artists: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        title: "Shake It Off",
+        album_id: albumIds[2].toString(),
+        artist_id: artistIds[2].toString(),
+        duration: 219,
+        track_number: 1,
+        genre: "Pop",
+        lyrics: "I stay out too late, got nothing in my brain...",
+        audio_url: "https://example.com/shake-it-off.mp3",
+        featured_artists: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        title: "Cardigan",
+        album_id: albumIds[3].toString(),
+        artist_id: artistIds[2].toString(),
+        duration: 239,
+        track_number: 1,
+        genre: "Indie Folk",
+        lyrics: "Vintage tee, brand new phone...",
+        audio_url: "https://example.com/cardigan.mp3",
+        featured_artists: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ];
+    
+    const songResult = await database.collection('songs').insertMany(sampleSongs);
+    const songIds = Object.values(songResult.insertedIds);
+    
+    // Sample playlists
+    const samplePlaylists = [
+      {
+        name: "Classic Rock Hits",
+        creator_name: "John Doe",
+        description: "The best classic rock songs of all time",
+        songs: [songIds[0].toString(), songIds[1].toString(), songIds[2].toString()],
+        tags: ["rock", "classic", "oldies"],
+        is_public: true,
+        cover_image_url: "https://example.com/classic-rock-playlist.jpg",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: "Taylor Swift Favorites",
+        creator_name: "Jane Smith",
+        description: "My favorite Taylor Swift songs",
+        songs: [songIds[3].toString(), songIds[4].toString()],
+        tags: ["pop", "taylor swift", "favorites"],
+        is_public: true,
+        cover_image_url: "https://example.com/taylor-swift-playlist.jpg",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: "Private Mix",
+        creator_name: "Bob Johnson",
+        description: "My personal music mix",
+        songs: [songIds[0].toString(), songIds[3].toString()],
+        tags: ["personal", "mix"],
+        is_public: false,
+        cover_image_url: "",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ];
+    
+    const playlistResult = await database.collection('playlists').insertMany(samplePlaylists);
     
     res.status(200).json({
       message: 'Database seeded successfully!',
       artistsInserted: artistResult.insertedCount,
-      albumsInserted: albumResult.insertedCount
+      albumsInserted: albumResult.insertedCount,
+      songsInserted: songResult.insertedCount,
+      playlistsInserted: playlistResult.insertedCount
     });
   } catch (error) {
     console.error('Error seeding database:', error);
@@ -174,13 +289,15 @@ app.post('/seed', async (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to the Music API',
-    description: 'A comprehensive REST API for managing artists and albums',
+    description: 'A comprehensive REST API for managing artists, albums, songs, and playlists',
     documentation: '/api-docs',
     endpoints: {
       artists: '/artists',
-      albums: '/albums'
+      albums: '/albums',
+      songs: '/songs',
+      playlists: '/playlists'
     },
-    version: '1.0.0'
+    version: '2.0.0'
   });
 });
 
@@ -198,7 +315,7 @@ app.use('*', (req, res) => {
   res.status(404).json({
     error: 'Not found',
     message: 'The requested endpoint does not exist',
-    availableEndpoints: ['/artists', '/albums', '/api-docs']
+    availableEndpoints: ['/artists', '/albums', '/songs', '/playlists', '/api-docs']
   });
 });
 
@@ -213,6 +330,8 @@ db.initDb((err) => {
       console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
       console.log(`🎤 Artists endpoint: http://localhost:${PORT}/artists`);
       console.log(`💿 Albums endpoint: http://localhost:${PORT}/albums`);
+      console.log(`🎶 Songs endpoint: http://localhost:${PORT}/songs`);
+      console.log(`📝 Playlists endpoint: http://localhost:${PORT}/playlists`);
     });
   }
 });
