@@ -77,7 +77,9 @@ Say: "All 4 collections have complete CRUD operations"
 **Show Real OAuth Protection:**
 
 - Say: "Let me demonstrate OAuth protection with real authentication errors"
-- Try POST /songs → Paste this JSON:
+- First, disable demo mode: POST /auth/toggle-demo → Execute (no body needed)
+- Should see "Demo mode DISABLED" response
+- Now try POST /songs → Paste this JSON:
 
 ```json
 {
