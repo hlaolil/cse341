@@ -11,19 +11,32 @@
 
 **Artists & Albums (quick):**
 
-- GET /artists → Execute → Say: "Artists GET works"
-- GET /albums → Execute → Say: "Albums GET works"
+- GET /artists → Execute → Say: "Artists GET works" → **Copy any artist ID** (use: 68d85a0e6d402fd815402298)
+- POST /albums → Paste this JSON (replace artist_id with copied ID):
+
+```json
+{
+  "title": "Demo Album",
+  "artist_id": "68d85a0e6d402fd815402298",
+  "release_date": "2024-01-01",
+  "genre": "Rock",
+  "track_count": 10,
+  "duration": 45
+}
+```
+
+→ Execute → Say: "Albums POST works" → **Copy the new album ID from response**
 
 **Songs Collection (45s) - Show ALL CRUD:**
 
 - GET /songs → Execute → Say: "Songs GET works"
-- POST /songs → Paste this JSON:
+- POST /songs → Paste this JSON (use the IDs you copied above):
 
 ```json
 {
   "title": "Demo Song",
-  "album_id": "507f1f77bcf86cd799439011",
-  "artist_id": "507f1f77bcf86cd799439011",
+  "album_id": "USE_ALBUM_ID_FROM_ABOVE",
+  "artist_id": "68d85a0e6d402fd815402298",
   "duration": 210,
   "track_number": 1,
   "genre": "Rock"
@@ -79,15 +92,15 @@ Say: "All 4 collections have complete CRUD operations"
 - Say: "Let me demonstrate OAuth protection with real authentication errors"
 - First, disable demo mode: POST /auth/toggle-demo → Execute (no body needed)
 - Should see "Demo mode DISABLED" response
-- Now try POST /songs → Paste this JSON:
+- Now try POST /songs → Paste this JSON (use real IDs):
 
 ```json
 {
-  "title": "Demo Song",
-  "album_id": "507f1f77bcf86cd799439011",
-  "artist_id": "507f1f77bcf86cd799439011",
-  "duration": 210,
-  "track_number": 1,
+  "title": "OAuth Test Song",
+  "album_id": "USE_ALBUM_ID_FROM_ABOVE",
+  "artist_id": "68d85a0e6d402fd815402298",
+  "duration": 180,
+  "track_number": 2,
   "genre": "Rock"
 }
 ```
