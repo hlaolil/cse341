@@ -1,12 +1,38 @@
 const express = require('express');
 const router = express.Router();
+const { toggleDemoMode, getDemoMode } = require('../middleware/auth');
 
 // GET /auth/login - Show login information
 router.get('/login', (req, res) => {
   res.json({
     message: 'OAuth authentication available',
     googleLogin: '/auth/google',
-    demo: 'Demo mode active - authentication is simulated for testing purposes'
+    demo: 'Demo mode available - use /auth/toggle-demo to control',
+    demoMode: getDemoMode(),
+    user: req.user || null
+  });
+});
+
+// POST /auth/toggle-demo - Toggle demo mode on/off
+router.post('/toggle-demo', (req, res) => {
+  const { enable } = req.body || {};
+  const newState = toggleDemoMode(enable);
+  
+  res.json({
+    demoMode: newState,
+    message: `Demo mode ${newState ? 'ENABLED' : 'DISABLED'}`,
+    instruction: newState 
+      ? 'Protected routes are now accessible without authentication' 
+      : 'Protected routes now require real authentication (will show 401 errors)'
+  });
+});
+
+// GET /auth/demo-mode - Get current demo mode status
+router.get('/demo-mode', (req, res) => {
+  const demoMode = getDemoMode();
+  res.json({
+    demoMode: demoMode,
+    message: `Demo mode is currently ${demoMode ? 'ENABLED' : 'DISABLED'}`
   });
 });
 
