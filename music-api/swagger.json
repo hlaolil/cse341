@@ -54,6 +54,60 @@
         }
       }
     },
+    "/auth/toggle-demo": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Toggle demo mode",
+        "description": "Toggles between demo mode (allows unauthenticated access) and normal mode (requires OAuth)",
+        "responses": {
+          "200": {
+            "description": "Demo mode toggled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Demo mode DISABLED"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/demo-mode": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Check demo mode status",
+        "description": "Returns current demo mode status",
+        "responses": {
+          "200": {
+            "description": "Demo mode status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "isDemoMode": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Demo mode is currently disabled"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/artists": {
       "get": {
         "tags": ["Artists"],
