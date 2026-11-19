@@ -1,3 +1,15 @@
+> **About this fork:** this is a fork of [kendychae/cse341](https://github.com/kendychae/cse341), a classmate's CSE 341 (Web Services) repository at BYU–Pathway Worldwide, which I kept for reference. All the code and commits are theirs. It contains three projects:
+>
+> | Folder | Project |
+> | --- | --- |
+> | repository root (`server.js`, `routes/`, `db/`) | Contacts API, weeks 1–2 (described below) |
+> | [`music-api/`](music-api/) | Music API: artists, albums, songs and playlists, with OAuth, Swagger and Jest tests |
+> | [`recipe-meal-planner/`](recipe-meal-planner/) | Recipe and meal-planning API with Swagger, set up for deployment on Render |
+>
+> My own CSE 341 work is in [cse341-ww-student-code](https://github.com/hlaolil/cse341-ww-student-code), [cse341-week3](https://github.com/hlaolil/cse341-week3) and [WebServices](https://github.com/hlaolil/WebServices).
+
+---
+
 # Contacts API (CSE 341 Week 01)
 
 This small project provides a Contacts API backed by MongoDB. It satisfies the Week 01 project requirements: connect to MongoDB, import data, implement GET routes, and prepare for deployment.
